@@ -10,23 +10,23 @@ The board below updates frequently, allowing you to watch the game progress move
 
 **Game Info:**  
 - Games Played: `<!-- GAMES_PLAYED --> 0
-- Red Wins: `<!-- RED_WINS --> 40
-- Black Wins: `<!-- BLACK_WINS --> 85
-- Draws: `<!-- DRAWS --> 15
+- Red Wins: `<!-- RED_WINS --> 46
+- Black Wins: `<!-- BLACK_WINS --> 97
+- Draws: `<!-- DRAWS --> 17
 
 <!-- AI_STATS -->
 **AI Strategy Stats:**
 
 Red AI:
 - Random: 24
-- Aggressive: 27
-- Defensive: 28
-- Center-Seeking: 31
-- Promotion-Oriented: 30
+- Aggressive: 31
+- Defensive: 34
+- Center-Seeking: 37
+- Promotion-Oriented: 34
 
 Black AI:
-- Random: 23
-- Aggressive: 31
-- Defensive: 21
-- Center-Seeking: 36
-- Promotion-Oriented: 29
+- Random: 26
+- Aggressive: 36
+- Defensive: 25
+- Center-Seeking: 40
+- Promotion-Oriented: 33
