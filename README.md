@@ -2,15 +2,15 @@
 
 **Current Board State:**  
 <!-- START_GIF -->
-*(Loading GIF...)*  
+![Checkers Game](./checkers_game.gif)
 <!-- END_GIF -->
 
 **Game Info:**  
-- Current Turn: `<!-- CURRENT_TURN -->`
-- Last Move: `<!-- LAST_MOVE -->`
-- Red Wins: `<!-- RED_WINS -->`
-- Black Wins: `<!-- BLACK_WINS -->`
-- Games Played: `<!-- GAMES_PLAYED -->`
+- Current Turn: `<!-- CURRENT_TURN --> Black
+- Last Move: `<!-- LAST_MOVE --> Red moved g6 -> h5 (captures: 0)
+- Red Wins: `<!-- RED_WINS --> 0
+- Black Wins: `<!-- BLACK_WINS --> 0
+- Games Played: `<!-- GAMES_PLAYED --> 1
 
 **AI Pool:**
 1. Random
