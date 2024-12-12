@@ -1,22 +1,22 @@
 {
-    "games_played": 160,
-    "red_wins": 51,
-    "black_wins": 86,
-    "draws": 23,
+    "games_played": 180,
+    "red_wins": 57,
+    "black_wins": 96,
+    "draws": 27,
     "ai_stats": {
         "red": {
-            "random": 25,
-            "aggressive": 30,
-            "defensive": 28,
-            "center": 38,
-            "promotion": 39
+            "random": 31,
+            "aggressive": 34,
+            "defensive": 32,
+            "center": 42,
+            "promotion": 41
         },
         "black": {
-            "random": 32,
-            "aggressive": 30,
-            "defensive": 28,
-            "center": 35,
-            "promotion": 35
+            "random": 35,
+            "aggressive": 32,
+            "defensive": 32,
+            "center": 39,
+            "promotion": 42
         }
     }
 }
