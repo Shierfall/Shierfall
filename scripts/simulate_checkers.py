@@ -174,18 +174,26 @@ def create_gif():
     for file in frame_files:
         try:
             frame = Image.open(os.path.join(GIF_DIR, file))
-            frames.append(frame)
+            # Resize frame to desired dimensions
+            resized_frame = frame.resize((500, 500))  # Example: Resize to 500x500 pixels
+            frames.append(resized_frame)
         except Exception as e:
             logging.error(f"Error loading frame {file}: {e}")
+
     if frames:
         try:
-            frames[0].save(GIF_FILE, save_all=True, append_images=frames[1:], duration=500, loop=0)
+            frames[0].save(
+                GIF_FILE,
+                save_all=True,
+                append_images=frames[1:],
+                duration=500,
+                loop=0
+            )
             logging.info(f"Animated GIF created/updated: {GIF_FILE}")
         except Exception as e:
             logging.error(f"Error creating/updating GIF: {e}")
     else:
         logging.warning("No frames found to create GIF.")
-
 
 def cleanup_old_frames():
     """Remove older frames to manage repository size."""
