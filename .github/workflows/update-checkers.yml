@@ -7,19 +7,24 @@ on:
 jobs:
   update-checkers:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Required for pushing changes
     steps:
-    permissions: write-all
       - uses: actions/checkout@v2
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+
       - name: Install dependencies
         run: |
           pip install --upgrade pip
           pip install Pillow
+
       - name: Run simulation
         run: python scripts/simulate_checkers.py
+
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
