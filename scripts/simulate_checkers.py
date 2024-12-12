@@ -109,7 +109,7 @@ def render_board_image(board, last_move, turn, game_number):
     Returns:
     - PIL.Image: Rendered image of the board.
     """
-    cell_size = 60
+    cell_size = 40
     board_size = cell_size * 8
     img = Image.new('RGB', (board_size, board_size + 100), color='white')
     draw = ImageDraw.Draw(img)
