@@ -2,9 +2,14 @@ import os
 import re
 import json
 import random
+from PIL import Image, ImageDraw, ImageFont
 
 STATE_FILE = "game_state.json"
 README_FILE = "README.md"
+GIF_DIR = "frames"
+GIF_FILE = "checkers_game.gif"
+
+os.makedirs(GIF_DIR, exist_ok=True)
 
 #initial board configuration for checkers:
 INITIAL_BOARD = [
@@ -17,7 +22,82 @@ INITIAL_BOARD = [
     ['.', 'r', '.', 'r', '.', 'r', '.', 'r'],
     ['r', '.', 'r', '.', 'r', '.', 'r', '.']
 ]
+def render_board_image(board, last_move, turn):
+    # Create an image representation of the board
+    cell_size = 60
+    board_size = cell_size * 8
+    img = Image.new('RGB', (board_size, board_size + 60), color='white')
+    draw = ImageDraw.Draw(img)
 
+    # Draw the board
+    for r in range(8):
+        for c in range(8):
+            top_left = (c * cell_size, r * cell_size)
+            bottom_right = ((c + 1) * cell_size, (r + 1) * cell_size)
+            if (r + c) % 2 == 0:
+                fill = '#EEEED2'  # Light squares
+            else:
+                fill = '#769656'  # Dark squares
+            draw.rectangle([top_left, bottom_right], fill=fill)
+
+            piece = board[r][c]
+            if piece != '.':
+                # Draw pieces as circles
+                if piece.lower() == 'r':
+                    color = 'red'
+                else:
+                    color = 'black'
+                center = (c * cell_size + cell_size // 2, r * cell_size + cell_size // 2)
+                radius = cell_size // 3
+                draw.ellipse([center[0]-radius, center[1]-radius, center[0]+radius, center[1]+radius], fill=color)
+                if piece.isupper():
+                    # King indicator
+                    draw.text((center[0]-10, center[1]-10), "K", fill='yellow')
+
+    # Add text for last move and turn
+    font = ImageFont.load_default()
+    draw.text((10, board_size + 10), f"Turn: {'Red' if turn == 'r' else 'Black'}", fill='black', font=font)
+    draw.text((10, board_size + 30), f"Last Move: {last_move}", fill='black', font=font)
+
+    return img
+
+def save_frame(state):
+    board = state["board"]
+    last_move = state["last_move"]
+    turn = state["turn"]
+    img = render_board_image(board, last_move, turn)
+    frame_number = state.get("frame_number", 0)
+    frame_path = os.path.join(GIF_DIR, f"frame_{frame_number:04d}.png")
+    img.save(frame_path)
+    state["frame_number"] = frame_number + 1
+    return state
+
+def create_gif():
+    frames = []
+    frame_files = sorted([f for f in os.listdir(GIF_DIR) if f.startswith("frame_") and f.endswith(".png")])
+    for file in frame_files:
+        frame = Image.open(os.path.join(GIF_DIR, file))
+        frames.append(frame)
+    if frames:
+        frames[0].save(GIF_FILE, save_all=True, append_images=frames[1:], duration=1000, loop=0)
+
+def cleanup_frames():
+    # Optional: Keep only the latest N frames to save space
+    frame_files = sorted([f for f in os.listdir(GIF_DIR) if f.startswith("frame_") and f.endswith(".png")])
+    max_frames = 100  # Adjust as needed
+    for file in frame_files[:-max_frames]:
+        os.remove(os.path.join(GIF_DIR, file))
+
+def update_readme_with_gif():
+    with open(README_FILE, "r") as f:
+        content = f.read()
+
+    content = re.sub(r"(<!-- START_GIF -->)(.*?)(<!-- END_GIF -->)",
+                    f"<!-- START_GIF -->\n![Checkers Game](./{GIF_FILE})\n<!-- END_GIF -->",
+                    content, flags=re.DOTALL)
+
+    with open(README_FILE, "w") as f:
+        f.write(content)
 def load_state():
     if os.path.exists(STATE_FILE):
         with open(STATE_FILE, "r") as f:
@@ -312,12 +392,15 @@ def play_turn(state):
 
 if __name__ == "__main__":
     state = load_state()
-    #if new game (no algo chosen), choose now
-    if state["red_algo"] is None or state["black_algo" ] is None: 
+    if state["red_algo"] is None or state["black_algo"] is None:
         state = reset_game(state)
 
-    #simulate a few moves each run
-    for _ in range(5):
-        state = play_turn(state)
+    # Do exactly 1 move per run
+    state = play_turn(state)
+    state = save_frame(state)
     save_state(state)
-    update_readme(state)
+
+    # Create or update the GIF
+    create_gif()
+    cleanup_frames()
+    update_readme_with_gif()
