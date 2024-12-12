@@ -7,10 +7,17 @@ on:
 jobs:
   update-checkers:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write  # Required for pushing changes
+    permissions: write-all
+
     steps:
       - uses: actions/checkout@v2
+
+      - name: Clear frames directory
+        run: |
+          if [ -d "frames" ]; then
+            rm -rf frames
+          fi
+          mkdir frames
 
       - name: Set up Python
         uses: actions/setup-python@v4
