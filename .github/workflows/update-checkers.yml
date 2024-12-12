@@ -2,7 +2,7 @@ name: Update Checkers
 
 on:
   schedule:
-    - cron: "0 * * * *"  # Every hour
+    - cron: "*/5 * * * *"  # Every 5 minutes
   workflow_dispatch: {}
 
 jobs:
@@ -15,15 +15,17 @@ jobs:
         with:
           python-version: '3.10'
       - name: Install dependencies
-        run: pip install --upgrade pip
+        run: |
+          pip install --upgrade pip
+          pip install Pillow
       - name: Run simulation
         run: python scripts/simulate_checkers.py
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md game_state.json
+          git add README.md game_state.json checkers_game.gif frames/
           if ! git diff --cached --quiet; then
-            git commit -m "Update checkers board"
+            git commit -m "Update checkers board and GIF"
             git push
           fi
