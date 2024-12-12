@@ -175,7 +175,7 @@ def create_gif():
         try:
             frame = Image.open(os.path.join(GIF_DIR, file))
             # Resize frame to desired dimensions
-            resized_frame = frame.resize((500, 500))  # Example: Resize to 500x500 pixels
+            resized_frame = frame.resize((500*5, 500*5))  # Example: Resize to 500x500 pixels
             frames.append(resized_frame)
         except Exception as e:
             logging.error(f"Error loading frame {file}: {e}")
