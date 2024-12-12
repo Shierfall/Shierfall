@@ -1,0 +1,29 @@
+name: Update Checkers
+
+on:
+  schedule:
+    - cron: "0 * * * *"  # Every hour
+  workflow_dispatch: {}
+
+jobs:
+  update-checkers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: pip install --upgrade pip
+      - name: Run simulation
+        run: python scripts/simulate_checkers.py
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md game_state.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update checkers board"
+            git push
+          fi
