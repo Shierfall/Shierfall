@@ -14,7 +14,6 @@ The board below updates frequently, allowing you to watch the game progress move
 - Black Wins: `<!-- BLACK_WINS --> 21
 - Draws: `<!-- DRAWS --> 5
 
-**AI Strategy Stats:**  
 <!-- AI_STATS -->
 **AI Strategy Stats:**
 

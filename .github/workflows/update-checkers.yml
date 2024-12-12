@@ -1,5 +1,4 @@
 name: Update Checkers
-
 on:
   schedule:
     - cron: "*/5 * * * *"  # Every 5 minutes
@@ -9,6 +8,7 @@ jobs:
   update-checkers:
     runs-on: ubuntu-latest
     steps:
+    permissions: write-all
       - uses: actions/checkout@v2
       - name: Set up Python
         uses: actions/setup-python@v4
