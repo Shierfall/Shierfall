@@ -3,7 +3,7 @@
 <!-- END_GIF -->
 
 **Game Info:**  
-- Red Wins: `<!-- RED_WINS --> 56
-- Black Wins: `<!-- BLACK_WINS --> 105
-- Draws: `<!-- DRAWS --> 19
+- Red Wins: `<!-- RED_WINS --> 63
+- Black Wins: `<!-- BLACK_WINS --> 117
+- Draws: `<!-- DRAWS --> 20
 
