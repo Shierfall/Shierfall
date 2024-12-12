@@ -1,9 +1,13 @@
+
+**Current Board State:**  
 <!-- START_GIF -->
-![Checkers Game](./checkers_game.gif)
+*(Loading GIF...)*
 <!-- END_GIF -->
 
 **Game Info:**  
-- Red Wins: `<!-- RED_WINS --> 63
-- Black Wins: `<!-- BLACK_WINS --> 117
-- Draws: `<!-- DRAWS --> 20
+- Games Played: `<!-- GAMES_PLAYED -->`
+- Red Wins: `<!-- RED_WINS -->`
+- Black Wins: `<!-- BLACK_WINS -->`
 
+**AI Strategy Stats:**  
+<!-- AI_STATS -->

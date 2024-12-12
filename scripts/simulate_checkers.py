@@ -91,11 +91,6 @@ def serialize_board(board):
     return tuple(tuple(row) for row in board)
 
 
-def has_repetition(board_history, current_board):
-    """Check if the current board state has occurred previously."""
-    return board_history.count(current_board) >= 3
-
-
 def render_board_image(board, last_move, turn, game_number):
     """
     Render the current state of the board as an image.
@@ -104,7 +99,7 @@ def render_board_image(board, last_move, turn, game_number):
     - board (list): 2D list representing the board.
     - last_move (str): Description of the last move.
     - turn (str): Current turn ('r' or 'b').
-    - game_number (int): The current game number for separation.
+    - game_number (int): The current game number for labeling.
 
     Returns:
     - PIL.Image: Rendered image of the board.
@@ -141,10 +136,10 @@ def render_board_image(board, last_move, turn, game_number):
                     text_position = (center[0] - text_size[0] // 2, center[1] - text_size[1] // 2)
                     draw.text(text_position, text, fill='yellow', font=font)
 
-    # Add separation between games
+    # Add a line and text below the board
     separation_y = board_size + 40
     draw.line([(0, separation_y), (board_size, separation_y)], fill='gray', width=2)
-    draw.text((10, separation_y + 5), f"Game {game_number} Completed", fill='black', font=ImageFont.load_default())
+    draw.text((10, separation_y + 5), f"Game {game_number} State", fill='black', font=ImageFont.load_default())
 
     # Add text for last move and current turn
     font = ImageFont.load_default()
@@ -174,8 +169,8 @@ def create_gif():
     for file in frame_files:
         try:
             frame = Image.open(os.path.join(GIF_DIR, file))
-            # Resize frame to desired dimensions
-            resized_frame = frame.resize((5000, 5000))  # Example: Resize to 500x500 pixels
+            # Resize frame to 500x500 pixels as indicated by the comment
+            resized_frame = frame.resize((500, 500))
             frames.append(resized_frame)
         except Exception as e:
             logging.error(f"Error loading frame {file}: {e}")
@@ -195,69 +190,21 @@ def create_gif():
     else:
         logging.warning("No frames found to create GIF.")
 
+
 def cleanup_old_frames():
     """Remove older frames to manage repository size."""
     frame_files = sorted([
         f for f in os.listdir(GIF_DIR)
         if f.startswith("game_") and f.endswith(".png")
     ])
-    max_frames = 2000  # Adjust as needed (e.g., 20 games * ~100 moves)
-    for file in frame_files[:-max_frames]:
-        try:
-            os.remove(os.path.join(GIF_DIR, file))
-            logging.info(f"Removed old frame: {file}")
-        except Exception as e:
-            logging.error(f"Error removing frame {file}: {e}")
-
-
-def update_readme(state):
-    """Update README.md with the latest GIF and statistics."""
-    if not os.path.exists(README_FILE):
-        logging.error(f"{README_FILE} does not exist. Please ensure it is present in the repository.")
-        return
-
-    with open(README_FILE, "r") as f:
-        content = f.read()
-
-    # Update the GIF
-    content = re.sub(
-        r"(<!-- START_GIF -->)(.*?)(<!-- END_GIF -->)",
-        f"<!-- START_GIF -->\n![Checkers Game](./{GIF_FILE})\n<!-- END_GIF -->",
-        content,
-        flags=re.DOTALL
-    )
-
-    # Update game info placeholders
-    content = re.sub(r"<!-- GAMES_PLAYED -->.*", f"<!-- GAMES_PLAYED --> {state['games_played']}", content)
-    content = re.sub(r"<!-- RED_WINS -->.*", f"<!-- RED_WINS --> {state['red_wins']}", content)
-    content = re.sub(r"<!-- BLACK_WINS -->.*", f"<!-- BLACK_WINS --> {state['black_wins']}", content)
-    content = re.sub(r"<!-- DRAWS -->.*", f"<!-- DRAWS --> {state['draws']}", content)
-
-    # Update AI statistics
-    ai_stats_red = state["ai_stats"]["red"]
-    ai_stats_black = state["ai_stats"]["black"]
-    ai_stats_text = "\n**AI Strategy Stats:**\n\n" \
-                    "Red AI:\n" \
-                    f"- Random: {ai_stats_red['random']}\n" \
-                    f"- Aggressive: {ai_stats_red['aggressive']}\n" \
-                    f"- Defensive: {ai_stats_red['defensive']}\n" \
-                    f"- Center-Seeking: {ai_stats_red['center']}\n" \
-                    f"- Promotion-Oriented: {ai_stats_red['promotion']}\n\n" \
-                    "Black AI:\n" \
-                    f"- Random: {ai_stats_black['random']}\n" \
-                    f"- Aggressive: {ai_stats_black['aggressive']}\n" \
-                    f"- Defensive: {ai_stats_black['defensive']}\n" \
-                    f"- Center-Seeking: {ai_stats_black['center']}\n" \
-                    f"- Promotion-Oriented: {ai_stats_black['promotion']}\n"
-
-    content = re.sub(r"<!-- AI_STATS -->.*", f"<!-- AI_STATS -->{ai_stats_text}", content, flags=re.DOTALL)
-
-    try:
-        with open(README_FILE, "w") as f:
-            f.write(content)
-        logging.info(f"Updated {README_FILE} with latest GIF and statistics.")
-    except Exception as e:
-        logging.error(f"Error updating {README_FILE}: {e}")
+    max_frames = 2000  # Adjust as needed
+    if len(frame_files) > max_frames:
+        for file in frame_files[:-max_frames]:
+            try:
+                os.remove(os.path.join(GIF_DIR, file))
+                logging.info(f"Removed old frame: {file}")
+            except Exception as e:
+                logging.error(f"Error removing frame {file}: {e}")
 
 
 def check_winner(board):
@@ -389,20 +336,19 @@ def choose_move(moves, algorithm, board, player):
         # Prioritize capturing moves with additional heuristics
         capturing_moves = [m for m in moves if m["captures"] > 0]
         if capturing_moves:
-            # Further prioritize based on position or advancement
             capturing_moves.sort(key=lambda m: heuristic_aggressive(m, board, player), reverse=True)
             return capturing_moves[0]
         return random.choice(moves)
 
     elif algorithm == "defensive":
-        # Prioritize moves that minimize opponent's capturing opportunities
+        # Prioritize moves that might be safer (dummy heuristic)
         defensive_moves = [m for m in moves if heuristic_defensive(m, board, player)]
         if defensive_moves:
             return defensive_moves[0]
         return random.choice(moves)
 
     elif algorithm == "center":
-        # Prefer moves towards the center columns (columns 3 and 4)
+        # Prefer moves towards the center
         moves_sorted = sorted(moves, key=lambda m: heuristic_center(m), reverse=True)
         return moves_sorted[0] if moves_sorted else random.choice(moves)
 
@@ -421,18 +367,15 @@ def choose_move(moves, algorithm, board, player):
 
 def heuristic_aggressive(move, board, player):
     """Assign a score to a move based on aggressive strategy."""
-    score = move["captures"] * 10  # Base score for captures
+    score = move["captures"] * 10
     _, ec = move["end"]
-    # Prefer central columns
+    # Prefer more central columns
     score += (3 - abs(ec - 3.5))
     return score
 
 
 def heuristic_defensive(move, board, player):
-    """Determine if a move is defensive."""
-    # Example: Avoid moves that leave pieces vulnerable
-    # Placeholder logic: Always True
-    # Implement specific defensive heuristics as needed
+    """A placeholder for defensive logic."""
     return True
 
 
@@ -441,20 +384,19 @@ def heuristic_center(move):
     _, ec = move["end"]
     center = 3.5
     distance = abs(ec - center)
-    # Closer to center gets higher score
     return 3.5 - distance
 
 
 def heuristic_promotion_red(move):
-    """Assign a score based on how close Red's piece is to promotion."""
+    """Score based on proximity to top for Red."""
     _, er = move["end"]
-    return 7 - er  # Lower row number is better for Red
+    return 7 - er
 
 
 def heuristic_promotion_black(move):
-    """Assign a score based on how close Black's piece is to promotion."""
+    """Score based on proximity to bottom for Black."""
     _, er = move["end"]
-    return er  # Higher row number is better for Black
+    return er
 
 
 def play_game(game_number, state):
@@ -481,7 +423,7 @@ def play_game(game_number, state):
 
     move_number = 0
     last_move = ""
-    max_moves = 70  # Set the move limit to 70
+    max_moves = 70
     board_history = []
 
     # Serialize initial board and add to history
@@ -493,9 +435,7 @@ def play_game(game_number, state):
         opp = 'b' if player == 'r' else 'r'
         algo = red_algo if player == 'r' else black_algo
 
-        # Get all legal moves for the current player
         moves = get_all_moves(board, player)
-
         if not moves:
             # No legal moves, opponent wins
             winner = opp
@@ -506,11 +446,9 @@ def play_game(game_number, state):
             logging.info(f"Game {game_number}: {'Red' if winner == 'r' else 'Black'} wins (no legal moves).")
             break
 
-        # Choose a move based on the AI algorithm
         chosen_move = choose_move(moves, algo, board, player)
         if chosen_move:
             board = apply_move(board, chosen_move)
-            # Record last move in a readable format
             (sr, sc) = chosen_move["start"]
             (er, ec) = chosen_move["end"]
             cols = "abcdefgh"
@@ -524,7 +462,7 @@ def play_game(game_number, state):
         img = render_board_image(board, last_move, turn, game_number)
         save_frame(img, game_number, move_number)
 
-        # Serialize current board and check for repetition
+        # Check for repetition
         serialized = serialize_board(board)
         board_history.append(serialized)
         repetition_count = board_history.count(serialized)
@@ -533,7 +471,7 @@ def play_game(game_number, state):
             state["draws"] += 1
             break
 
-        # Check for a winner after the move
+        # Check for a winner
         winner = check_winner(board)
         if winner:
             if winner == 'r':
@@ -543,10 +481,9 @@ def play_game(game_number, state):
             logging.info(f"Game {game_number}: {'Red' if winner == 'r' else 'Black'} wins.")
             break
 
-        # Switch turn to the opponent
+        # Switch turns
         turn = opp
         move_number += 1
-
     else:
         # Max moves reached without a clear winner
         red_pieces = sum(row.count('r') + row.count('R') for row in board)
@@ -579,8 +516,12 @@ def play_turn(state):
     - None
     """
     num_games = 20
-    for game_number in range(state["games_played"] + 1, state["games_played"] + num_games + 1):
+    start_game = state["games_played"] + 1
+    end_game = state["games_played"] + num_games
+    for game_number in range(start_game, end_game + 1):
         play_game(game_number, state)
+    # Update the games_played count after playing all the games
+    state["games_played"] = end_game
 
 
 def update_readme(state):
