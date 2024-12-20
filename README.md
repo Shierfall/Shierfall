@@ -5,23 +5,23 @@
 <!-- END_GIF -->
 
 **Game Info:**  
-- Games Played: `<!-- GAMES_PLAYED --> 13140
-- Red Wins: `<!-- RED_WINS --> 4811
-- Black Wins: `<!-- BLACK_WINS --> 7103
+- Games Played: `<!-- GAMES_PLAYED --> 13160
+- Red Wins: `<!-- RED_WINS --> 4821
+- Black Wins: `<!-- BLACK_WINS --> 7111
 
 <!-- AI_STATS -->
 **AI Strategy Stats:**
 
 Red AI:
-- Random: 2596
-- Aggressive: 2694
-- Defensive: 2495
-- Center-Seeking: 2635
-- Promotion-Oriented: 2720
+- Random: 2603
+- Aggressive: 2696
+- Defensive: 2496
+- Center-Seeking: 2639
+- Promotion-Oriented: 2726
 
 Black AI:
-- Random: 2582
-- Aggressive: 2636
-- Defensive: 2683
-- Center-Seeking: 2675
-- Promotion-Oriented: 2564
+- Random: 2584
+- Aggressive: 2637
+- Defensive: 2689
+- Center-Seeking: 2682
+- Promotion-Oriented: 2568
